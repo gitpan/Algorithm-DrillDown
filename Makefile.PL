@@ -2,9 +2,11 @@
 use warnings;
 use strict;
 
-# $Id: Makefile.PL 11 2007-12-03 12:23:40Z abuse $
-our $VERSION = do {
-  my @r=(q$Revision: 11 $=~/\d+/g); sprintf "%d."."%03d"x$#r,@r
+use vars qw( $VERSION );
+
+# $Id: Makefile.PL 13 2007-12-03 22:10:38Z abuse $
+$VERSION = do {
+  my @r=(q$Revision: 13 $=~/\d+/g); sprintf "%d."."%03d"x$#r,@r
 };
 
 use ExtUtils::MakeMaker;
@@ -15,6 +17,6 @@ warn "Note: ExtUtils::MakeMaker::Coverage not available, can't 'make testcover'\
 WriteMakefile(
               ABSTRACT => 'Turns a long list into an easy-to-navigate tree',
 	      NAME     => 'Algorithm::DrillDown',
-	      VERSION  => '0.002',
+	      VERSION  => '0.003',
               PREREQ_PM => {},
 	     );

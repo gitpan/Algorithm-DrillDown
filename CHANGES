@@ -1,3 +1,12 @@
+2007-12-03 - 1.003
+
+You! Yes, you doing CPAN testing on amd64-freebsd 6.2-release with
+perl-5.00505, what are you smoking using such a modern platform with such an
+antique Perl? Honestly...
+
+Anyway, the *other* "our" that I'd missed in 1.002 has been taken out and
+shot.
+
 2007-12-03 - 1.002
 
 One of the tests used "our" and broke on Perls <= 5.6, so it now does "use
