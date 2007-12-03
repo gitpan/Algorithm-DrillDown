@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:                Algorithm-DrillDown
-version:             0.001
-abstract:            ~
+version:             0.002
+abstract:            Turns a long list into an easy-to-navigate tree
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.36
 distribution_type:   module

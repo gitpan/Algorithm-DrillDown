@@ -8,7 +8,7 @@ plan(
      skip_all => 'Test::Pod::Coverage 1.04 required for testing POD coverage'
     ) if $@;
 
-our $TODO;
+use vars qw( $TODO );
 
 TODO: {
 
