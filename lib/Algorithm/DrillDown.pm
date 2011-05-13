@@ -1,5 +1,11 @@
 package Algorithm::DrillDown;
-
+BEGIN {
+  $Algorithm::DrillDown::DIST = 'Algorithm-DrillDown';
+}
+BEGIN {
+  $Algorithm::DrillDown::VERSION = '0.004';
+}
+# ABSTRACT: Turns a long list into an easy-to-navigate tree
 use warnings;
 use strict;
 
@@ -7,9 +13,54 @@ use Carp;
 
 use fields qw( slicer maxkeys maxitems maxdepth );
 
+
+sub _slicer_string {
+    my(undef, $level, $string) = @_;
+    return substr $string, 0, $level;
+}
+
+
+sub generate {
+    my($self, $list) = @_;
+    # we start off with a tree with everything in a top-level bucket
+    my %tree = ('' => $list);
+
+    for my $level (0..$self->{maxdepth}) {
+        my $splitcount;
+        foreach my $key (keys %tree) {
+            my $list = $tree{$key};
+            next if $#$list <= $self->{maxitems};
+
+            # this bucket is too full, so we split it to the next level
+            delete $tree{$key};
+            ++$splitcount;
+            foreach my $item (@$list) {
+                my $prefix = &{$self->{slicer}}($self, $level, $item);
+                push @{$tree{$prefix}||=[]}, $item;
+            }
+
+        }
+        # if nothing was split, everything was clearly in small-enough buckets
+        # so we're done
+        last unless $splitcount;
+    }
+
+    return wantarray ? %tree : \%tree;
+}
+
+
+1;
+
+__END__
+=pod
+
 =head1 NAME
 
 Algorithm::DrillDown - Turns a long list into an easy-to-navigate tree
+
+=head1 VERSION
+
+version 0.004
 
 =head1 SYNOPSIS
 
@@ -64,7 +115,7 @@ like:
 
 then a rather compressed/obfuscated invocation:
 
- my $result = Algorithm::DrillDown->new(maxitems=>16)->generate(\@list);
+ my $result = Algorithm::DrillDown->new(maxitems => 16)->generate(\@list);
 
 And the end result is a structure like this:
 
@@ -80,38 +131,30 @@ And the end result is a structure like this:
 Note that the lists are not guaranteed to be in any particular order. (The
 hash is obviously unsorted too.)
 
-=head1 FUNCTIONS
+=for test_synopsis my @authors;
 
-=cut
+=head1 METHODS
 
-sub _slicer_string {
-  my(undef, $level, $string) = @_;
-  return substr $string, 0, $level;
-}
+=head2 new
 
-=over 4
-
-=item B<new>
-
- my $drilldown = new Algorithm::Drilldown;
+ my $drilldown = Algorithm::Drilldown->new;
 
  sub myslicer {
-   my(undef, $level, $string) = @_;
-   $string =~ tr/0-9A-Za-z//cd;
-   return substr lc $string, 0, $level;
+     my(undef, $level, $string) = @_;
+     $string =~ tr/0-9A-Za-z//cd;
+     return substr lc $string, 0, $level;
  }
 
- my $drilldown_custom = new Algorithm::DrillDown
-      slicer => \&myslicer,
-      maxitems => 32,
-      maxdepth => 8;
+ my $drilldown_custom = Algorithm::DrillDown->new(
+     slicer => \&myslicer,
+     maxitems => 32,
+     maxdepth => 8,
+ );
 
 This creates a new Algorithm::DrillDown object. There are three possible
 parameters:
 
-=over 4
-
-=item slicer
+=head3 slicer
 
 A reference to your slicer function, that is one that takes the
 Algorithm::DrillDown object, a level (an integer, starting at zero) and your
@@ -121,63 +164,31 @@ which summarises that input at the given level.
 The default function is based on substr, and returns the string truncated to
 the same number of characters as the level.
 
-=item maxitems
+=head3 maxitems
 
 The maximum number of items to place in an output array. Note that an array
 may still exceed this value if maxlevel has been reached first.
 
-=item maxlevel
+=head3 maxlevel
 
 The maximum level that will be passed to your slicer function.
 
-=cut
-
 sub new {
-  my($self, %args) = @_;
-  unless(ref $self) {
-    $self = fields::new($self);
-  }
-  $self->{slicer} = $args{slicer} || \&_slicer_string;
-  $self->{maxitems} = $args{maxitems} || 32;
-  $self->{maxdepth} = $args{maxdepth} || 8;
-  return $self;
-}
-
-=over 4
-
-=item B<generate>
-
-=cut
-
-sub generate {
-  my($self, $list) = @_;
-  # we start off with a tree with everything in a top-level bucket
-  my %tree = ('' => $list);
-
-  for my $level (0..$self->{maxdepth}) {
-    my $splitcount;
-    foreach my $key (keys %tree) {
-      my $list = $tree{$key};
-      next if $#$list <= $self->{maxitems};
-
-      # this bucket is too full, so we split it to the next level
-      delete $tree{$key};
-      ++$splitcount;
-      foreach my $item (@$list) {
-	my $prefix = &{$self->{slicer}}($self, $level, $item);
-	push @{$tree{$prefix}||=[]}, $item;
-      }
-
+    my($self, %args) = @_;
+    unless(ref $self) {
+        $self = fields::new($self);
     }
-    # if nothing was split, everything was clearly in small-enough buckets
-    # so we're done
-    last unless $splitcount;
-  }
-
-  return wantarray ? %tree : \%tree;
+    $self->{slicer} = $args{slicer} || \&_slicer_string;
+    $self->{maxitems} = $args{maxitems} || 32;
+    $self->{maxdepth} = $args{maxdepth} || 8;
+    return $self;
 }
 
-=back
+=head2 generate
+
+Returns a hash-of-list or hashref-of-list (depending on context) of the
+longest common substring (or other string as obtained from the slicer) to
+the items that have been placed into that list.
 
 =head1 BUGS
 
@@ -190,24 +201,16 @@ and also this will cause it to appear at the maxdepth level. Since it works
 well enough for now, this is not being checked for. There are loads of
 possibly icky edge cases. (Note again the lack of tests.)
 
-=head1 SEE ALSO
-
 =head1 AUTHOR
 
-All code and documentation by Peter Corlett <abuse@cabal.org.uk>.
+Peter Corlett <abuse@cabal.org.uk>
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2007 Peter Corlett <abuse@cabal.org.uk>. All rights
-reserved.
+This software is copyright (c) 2011 by Peter Corlett.
 
-This program is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=head1 SUPPORT / WARRANTY
-
-This is free software. IT COMES WITHOUT WARRANTY OF ANY KIND.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
 
-1;

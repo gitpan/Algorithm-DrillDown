@@ -1,4 +1,9 @@
-2007-12-03 - 1.003
+Revision history for Algorithm-DrillDown
+
+0.004     2011-05-13 18:23:51 Europe/London
+        updated distribution to use Dist::Zilla
+
+1.003 2007-12-03
 
 You! Yes, you doing CPAN testing on amd64-freebsd 6.2-release with
 perl-5.00505, what are you smoking using such a modern platform with such an
@@ -7,11 +12,11 @@ antique Perl? Honestly...
 Anyway, the *other* "our" that I'd missed in 1.002 has been taken out and
 shot.
 
-2007-12-03 - 1.002
+1.002 2007-12-03
 
 One of the tests used "our" and broke on Perls <= 5.6, so it now does "use
 vars".
 
-2007-12-02 - 1.001
+1.001 2007-12-02
 
 Initial release.

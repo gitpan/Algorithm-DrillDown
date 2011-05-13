@@ -1,11 +1,23 @@
---- #YAML:1.0
-name:                Algorithm-DrillDown
-version:             0.003
-abstract:            Turns a long list into an easy-to-navigate tree
-license:             ~
-generated_by:        ExtUtils::MakeMaker version 6.36
-distribution_type:   module
-requires:     
+---
+abstract: 'Turns a long list into an easy-to-navigate tree'
+author:
+  - 'Peter Corlett <abuse@cabal.org.uk>'
+build_requires:
+  English: 0
+  File::Find: 0
+  File::Temp: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.31
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.200004, CPAN::Meta::Converter version 2.110930'
+license: perl
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
-    version: 1.2
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Algorithm-DrillDown
+requires:
+  Carp: 0
+  fields: 0
+  perl: 5.006
+version: 0.004
