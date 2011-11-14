@@ -2,35 +2,39 @@
 use strict;
 use warnings;
 
-BEGIN { require 5.006; }
+use 5.006;
 
-use ExtUtils::MakeMaker 6.31;
+use ExtUtils::MakeMaker 6.30;
 
 
 
 my %WriteMakefileArgs = (
-  'ABSTRACT' => 'Turns a long list into an easy-to-navigate tree',
-  'AUTHOR' => 'Peter Corlett <abuse@cabal.org.uk>',
-  'BUILD_REQUIRES' => {
-    'English' => '0',
-    'File::Find' => '0',
-    'File::Temp' => '0',
-    'Test::More' => '0'
+  "ABSTRACT" => "Turns a long list into an easy-to-navigate tree",
+  "AUTHOR" => "Peter Corlett <abuse\@cabal.org.uk>",
+  "BUILD_REQUIRES" => {
+    "English" => 0,
+    "File::Find" => 0,
+    "File::Temp" => 0,
+    "Test::More" => 0,
+    "Test::Most" => 0,
+    "strict" => 0,
+    "warnings" => 0
   },
-  'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.31'
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30"
   },
-  'DISTNAME' => 'Algorithm-DrillDown',
-  'EXE_FILES' => [],
-  'LICENSE' => 'perl',
-  'NAME' => 'Algorithm::DrillDown',
-  'PREREQ_PM' => {
-    'Carp' => '0',
-    'fields' => '0'
+  "DISTNAME" => "Algorithm-DrillDown",
+  "EXE_FILES" => [],
+  "LICENSE" => "perl",
+  "NAME" => "Algorithm::DrillDown",
+  "PREREQ_PM" => {
+    "Carp" => 0,
+    "Moose" => 0,
+    "MooseX::Types::Moose" => 0
   },
-  'VERSION' => '0.004',
-  'test' => {
-    'TESTS' => 't/*.t'
+  "VERSION" => "0.005",
+  "test" => {
+    "TESTS" => "t/*.t"
   }
 );
 

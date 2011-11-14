@@ -1,23 +1,19 @@
 package Algorithm::DrillDown;
-BEGIN {
+{
   $Algorithm::DrillDown::DIST = 'Algorithm-DrillDown';
 }
-BEGIN {
-  $Algorithm::DrillDown::VERSION = '0.004';
+{
+  $Algorithm::DrillDown::VERSION = '0.005';
 }
 # ABSTRACT: Turns a long list into an easy-to-navigate tree
-use warnings;
-use strict;
+use Moose;
+use MooseX::Types::Moose qw/ Int CodeRef /;
+
+has maxitems => ( is => 'rw', isa => Int, default => 32);
+has maxdepth => ( is => 'rw', isa => Int, default => 8);
+has slicer => ( is => 'rw', isa => CodeRef, default => sub { return \&_slicer_string } );
 
 use Carp;
-
-use fields qw( slicer maxkeys maxitems maxdepth );
-
-
-sub _slicer_string {
-    my(undef, $level, $string) = @_;
-    return substr $string, 0, $level;
-}
 
 
 sub generate {
@@ -49,6 +45,12 @@ sub generate {
 }
 
 
+sub _slicer_string {
+    my(undef, $level, $string) = @_;
+    return substr $string, 0, $level;
+}
+
+
 1;
 
 __END__
@@ -60,7 +62,7 @@ Algorithm::DrillDown - Turns a long list into an easy-to-navigate tree
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 
@@ -108,10 +110,10 @@ A specific example may help. The default slicer function is substr, so
 "least specific" means "shortest prefix". So if we start with something
 like:
 
- my @list = qw ( AADLER AAKD AAKHTER AALLAN AANKHEN AANZLOVAR AAR AARDEN
+ my @list = qw / AADLER AAKD AAKHTER AALLAN AANKHEN AANZLOVAR AAR AARDEN
  AARDO AARE AARON AARONJJ AARONSCA AASSAD AAU AAYARS ABALAMA ABARCLAY
  ABCDEFGH ABE ABELEW ABELTJE ABERGMAN ABERNDT ABEROHAM ABH ABHAS ABHIDHAR
- ZTURK ZUMMO ZUQIF ZURAWSKI ZZCGUMK );
+ ZTURK ZUMMO ZUQIF ZURAWSKI ZZCGUMK /;
 
 then a rather compressed/obfuscated invocation:
 
@@ -120,12 +122,12 @@ then a rather compressed/obfuscated invocation:
 And the end result is a structure like this:
 
  my $result = {
-     AA => [qw( AADLER, AAKD, AAKHTER, AALLAN, AANKHEN, AANZLOVAR, AAR,
-                AARDEN, AARDO, AARE, AARON, AARONJJ, AARONSCA, AASSAD, AAU,
-                AAYARS )],
-     AB => [qw( ABALAMA, ABARCLAY, ABCDEFGH, ABE, ABELEW, ABELTJE, ABERGMAN,
-                ABERNDT, ABEROHAM, ABH, ABHAS, ABHIDHAR )]
-     Z => [qw( ZTURK, ZUMMO, ZUQIF, ZURAWSKI, ZZCGUMK )],
+      AA => [qw/ AADLER AAKD AAKHTER AALLAN AANKHEN AANZLOVAR AAR
+                AARDEN AARDO AARE AARON AARONJJ AARONSCA AASSAD AAU
+                AAYARS /],
+     AB => [qw/ ABALAMA ABARCLAY ABCDEFGH ABE ABELEW ABELTJE ABERGMAN
+                ABERNDT ABEROHAM ABH ABHAS ABHIDHAR /],
+     Z => [qw/ ZTURK ZUMMO ZUQIF ZURAWSKI ZZCGUMK /],
  };
 
 Note that the lists are not guaranteed to be in any particular order. (The
@@ -133,28 +135,9 @@ hash is obviously unsorted too.)
 
 =for test_synopsis my @authors;
 
-=head1 METHODS
+=head1 MOOSE FIELDS
 
-=head2 new
-
- my $drilldown = Algorithm::Drilldown->new;
-
- sub myslicer {
-     my(undef, $level, $string) = @_;
-     $string =~ tr/0-9A-Za-z//cd;
-     return substr lc $string, 0, $level;
- }
-
- my $drilldown_custom = Algorithm::DrillDown->new(
-     slicer => \&myslicer,
-     maxitems => 32,
-     maxdepth => 8,
- );
-
-This creates a new Algorithm::DrillDown object. There are three possible
-parameters:
-
-=head3 slicer
+=head2 slicer
 
 A reference to your slicer function, that is one that takes the
 Algorithm::DrillDown object, a level (an integer, starting at zero) and your
@@ -164,25 +147,16 @@ which summarises that input at the given level.
 The default function is based on substr, and returns the string truncated to
 the same number of characters as the level.
 
-=head3 maxitems
+=head2 maxitems
 
 The maximum number of items to place in an output array. Note that an array
 may still exceed this value if maxlevel has been reached first.
 
-=head3 maxlevel
+=head2 maxlevel
 
 The maximum level that will be passed to your slicer function.
 
-sub new {
-    my($self, %args) = @_;
-    unless(ref $self) {
-        $self = fields::new($self);
-    }
-    $self->{slicer} = $args{slicer} || \&_slicer_string;
-    $self->{maxitems} = $args{maxitems} || 32;
-    $self->{maxdepth} = $args{maxdepth} || 8;
-    return $self;
-}
+=head1 METHODS
 
 =head2 generate
 
@@ -190,16 +164,19 @@ Returns a hash-of-list or hashref-of-list (depending on context) of the
 longest common substring (or other string as obtained from the slicer) to
 the items that have been placed into that list.
 
+=head1 PRIVATE METHODS
+
+=head2 _slicer_string
+
+The default slicer impementation, which splits strings on character
+boundaries.
+
 =head1 BUGS
-
-This documentation isn't great.
-
-Tests. We've heard of them.
 
 Pathological data will cause more than maxitems items to appear in a bucket,
 and also this will cause it to appear at the maxdepth level. Since it works
 well enough for now, this is not being checked for. There are loads of
-possibly icky edge cases. (Note again the lack of tests.)
+possibly icky edge cases.
 
 =head1 AUTHOR
 

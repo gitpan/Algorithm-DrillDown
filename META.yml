@@ -7,10 +7,13 @@ build_requires:
   File::Find: 0
   File::Temp: 0
   Test::More: 0
+  Test::Most: 0
+  strict: 0
+  warnings: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.31
+  ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.200004, CPAN::Meta::Converter version 2.110930'
+generated_by: 'Dist::Zilla version 4.300003, CPAN::Meta::Converter version 2.112621'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -18,6 +21,7 @@ meta-spec:
 name: Algorithm-DrillDown
 requires:
   Carp: 0
-  fields: 0
+  Moose: 0
+  MooseX::Types::Moose: 0
   perl: 5.006
-version: 0.004
+version: 0.005
