@@ -1,5 +1,7 @@
 Revision history for Algorithm-DrillDown
 
+0.006     2012-10-04 16:40:27 Europe/London
+
 0.005     2011-11-14 19:18:34 Europe/London
 - Moose-ified the module.
 - added an actual test that it works.

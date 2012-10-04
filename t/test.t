@@ -23,7 +23,9 @@ my $expected = {
     Z => [qw/ ZTURK ZUMMO ZUQIF ZURAWSKI ZZCGUMK /],
 };
 
-cmp_deeply($result, $expected, "generated the expected drilldown");
+eq_or_diff($result, $expected, "generated the expected drilldown");
+
+# FIXME: test undocumented array-of-depths functionality
 
 done_testing();
 
